@@ -1,2 +1,2 @@
-# Các Base Components React
+# Base Components React
 base components react
