@@ -67,7 +67,79 @@ function handleSelectPopup(item: any, data: any) {
     index: number;
 }
 ```
+* Ví dụ ItemViewRender như sau:
+```js
+export default function ItemViewRender({
+  item,
+  onPress,
+  sizeItem,
+  index,
+}) {
+  return (
+    <View
+      style={[
+        styles.view,
+        {
+          backgroundColor: item.isSelected
+            ? '#dce3f2'
+            : index % 2
+            ? '#F5F5F5'
+            : '#fff',
+          height: sizeItem.height,
+          width: sizeItem.width,
+        },
+      ]}>
+      <TouchableOpacity onPress={() => onPress(item)} style={styles.container}>
+        <Text
+          style={[
+            styles.text,
+            {fontWeight: item.isSelected ? 'bold' : 'normal'},
+          ]}
+          numberOfLines={2}>
+          {item.title}
+        </Text>
+        {item.isSelected ? (
+          <Ionicons
+            name="checkmark-outline"
+            size={20}
+            color="black"
+            style={styles.checkmark}
+          />
+        ) : (
+          <View style={styles.uncheck} />
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+}
 
+const styles = StyleSheet.create({
+  view: {
+    paddingHorizontal: 5,
+    paddingVertical: 7,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    flexDirection: 'row',
+  },
+  checkmark: {
+    alignSelf: 'center',
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+  },
+  text: {
+    flex: 1,
+  },
+  uncheck: {
+    width: 20,
+    height: 20,
+    alignSelf: 'center',
+    marginLeft: 2,
+  },
+});
+```
 ## option
 ```js
 type Options =
