@@ -1,6 +1,6 @@
 # Props của Base Popup
 | STT | Props | Kiểu | Bắt buộc | Mô tả | Giá trị mặc định
-| :----:|:-------------:|:---------:|:-----------:|:------------------:|:------------------:|
+| :---:|:-----------------:|:---------:|:-----------:|:------------------:|:------------------:|
 | 1 | data | any[] | true | Là một mảng cho popup hiện thị | |
 | 2 | onPressItem | (item: any, refLayout?: any) => void | true | Callback function khi ấn vào item trong popup | |
 | 3 | ItemViewRender | any | true | Giao diện của item trong popup | |
