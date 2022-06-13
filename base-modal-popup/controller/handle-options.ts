@@ -178,8 +178,8 @@ function onSelectOption(
   const layoutYtoHeight = layout.y + layout.height;
 
   // center ruler
-  const centerLayoutWidth = layoutXtoWidth / 2;
-  const centerLayoutHeight = layoutYtoHeight / 2;
+  const centerLayoutWidth = layout.x + layout.width / 2;
+  const centerLayoutHeight = layout.y + layout.height / 2;
   const rangeLeftPopup = centerLayoutWidth - widthPopup / 2;
   const rangeTopPopup = centerLayoutHeight - heightPopup / 2;
 
@@ -265,7 +265,7 @@ function onSelectOption(
       left: rangeLeftPopup,
     };
   } else if (value === KeyCase.CENTER_LEFT) {
-    console.log('option CENTER_LEFT');
+    console.log('option CENTER_LEFT: ', rangeTopPopup, layout.x - widthPopup);
     return {
       top: rangeTopPopup,
       // left: layoutPopup.x - widthPopup,

@@ -31,7 +31,7 @@
 - data: là mảng data dữ liệu gốc.
 - Làm như vậy thì sẽ có dấu tích ở cạnh item đã chọn khi bật popup mà không làm thay đổi cấu trúc data
 
-> Có nhiều cách xử lý.
+* Có nhiều cách xử lý.
 ```js
 //item: là phần tử
 function handleSelectPopup(item: any, data: any) {
@@ -52,7 +52,7 @@ function handleSelectPopup(item: any, data: any) {
 ## onPressItem
 * item: là phần tử đã chọn trong popup
 * refLayout: là ref của Layout muốn hiện popup.
-  - Thường sẽ dùng biến này khi sử dụng 1 popup cho nhiều Layout.
+- Thường sẽ dùng biến này khi sử dụng 1 popup cho nhiều Layout.
 
 ## ItemViewRender
 * Function component nên có props sau để có được hiệu quả tốt, không bị lỗi.
