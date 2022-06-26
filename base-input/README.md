@@ -38,6 +38,6 @@
 - Giá trị mặc định của `height` là `30`.
 - Không nên đặt giá trị height theo kiểu phần trăm vì có thể gây lỗi không đáng có.
 ## offsetMarginRecommend
-- Tổng hần bù margin vertical của styleViewRecommend.
+- Tổng phần bù margin vertical của styleViewRecommend.
 - Để tránh sự biến đổi giao diện của màn hình thì nên tính toán đúng.
 
