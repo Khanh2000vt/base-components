@@ -20,6 +20,7 @@
 | 17 | styleViewInput | StyleProp<ViewStyle>, undefined | false | style view cover TextInput | undefined |
 | 18 | offsetMarginRecommend | number | false | sum margin vertical of styleViewRecommend | 0 |
 | 18 | recommend | boolean | undefined | false | show options recommend if true. Only used when `option = price` | false |
+| 19 | value | string, undefined | true | value TextInput | undefined |
 
 # Note
 ## option
