@@ -69,11 +69,9 @@ function isErrorFormatType(text: string, option: string | undefined): boolean {
   let isError: boolean = false;
   if (option === 'phone') {
     isError = isErrorVietnamesePhoneNumber(text);
-    console.log('isError phone: ', isError);
   }
   if (option === 'email') {
     isError = isErrorValidateEmail(text);
-    console.log('isError email: ', isError, text);
   }
   return isError;
 }

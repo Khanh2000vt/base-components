@@ -1,4 +1,10 @@
-import {StyleProp, TextInputProps, TextStyle, ViewStyle} from 'react-native';
+import {
+  ColorValue,
+  StyleProp,
+  TextInputProps,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 
 interface PropsBaseInput {
   option?: 'text' | 'number' | 'phone' | 'email' | 'price' | undefined;
@@ -8,28 +14,26 @@ interface PropsBaseInput {
   onChangeText?: (text: string) => void | undefined;
   defaultValue?: string | undefined;
   autoFocus?: boolean | undefined;
-  onSubmitEditing?: (
-    nativeEvent: any,
-    isErrorInput: boolean,
-  ) => void | undefined;
+  onEndEditing?: (nativeEvent: any, isErrorInput: boolean) => void | undefined;
   onRef?: any;
   multiline?: boolean | undefined;
   secureTextEntry?: boolean | undefined;
-  recommend?: boolean | undefined;
+  suggestion?: boolean | undefined;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters' | undefined;
   propsOther?: React.Component<TextInputProps>;
+  styleViewInput?: StyleProp<ViewStyle> | undefined;
   style?: StyleProp<ViewStyle> | undefined;
   styleTitle?: StyleProp<TextStyle> | undefined;
-  styleViewRecommend?: StyleProp<ViewStyle> | undefined;
-  styleOptionsRecommend?: StyleProp<ViewStyle> | undefined;
-  styleTextRecommend?: StyleProp<TextStyle> | undefined;
-  styleViewInput?: StyleProp<ViewStyle> | undefined;
-  offsetMarginRecommend?: number;
+  styleViewSuggestion?: StyleProp<ViewStyle> | undefined;
+  styleOptionsSuggestion?: StyleProp<ViewStyle> | undefined;
+  styleTextSuggestion?: StyleProp<TextStyle> | undefined;
+  offsetMarginSuggestion?: number;
+  backgroundColor?: ColorValue | undefined;
 }
 
-interface RecommendProps {
+interface SuggestionProps {
   first: string;
   second: string;
   third: string;
 }
-export type {PropsBaseInput, RecommendProps};
+export type {PropsBaseInput, SuggestionProps};
