@@ -18,7 +18,7 @@
 | 15 | styleOptionsSuggestion | StyleProp<ViewStyle>, undefined | false | style options suggestion | undefined |
 | 16 | styleTextSuggestion | StyleProp<TextStyle>, undefined | false | style text suggestion | undefined |
 | 17 | styleViewInput | StyleProp<ViewStyle>, undefined | false | style view cover TextInput | undefined |
-| 18 | levelPasswords | 0,1,2,3 | false | The level security of password. Only use when `option = 'password' | 0 |
+| 18 | levelPasswords | 0,1,2,3 | false | The level security of password. Only use when `option = 'password'` | 0 |
 | 18 | suggestion | boolean | undefined | false | show options suggestion if true. Only used when `option = price` | false |
 | 19 | backgroundColor | ColorValue, undefined | false | background color of screen | #f0f0f0 |
 | 20 | value | string, undefined | true | value TextInput | undefined |
