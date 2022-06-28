@@ -1,22 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Keyboard,
   KeyboardType,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import ItemDelete from './components/item-delete';
+import ItemPassword from './components/item-password';
+import ItemPrice from './components/item-price';
+import ItemWarning from './components/item-warning';
 import {
+  getFormatConfirm,
+  getFormatPassword,
   getFormatPrice,
   getKeyboardType,
   getNumberOtherZero,
   isErrorFormatType,
 } from './controller/base-input-handle';
-import {PropsBaseInput, SuggestionProps} from './model/base-input-model';
+import {
+  LevelPassword,
+  PropsBaseInput,
+  SuggestionProps,
+} from './model/base-input-model';
 import {OPTION} from './utils';
 function BaseInput({
   option,
@@ -29,7 +37,6 @@ function BaseInput({
   onEndEditing,
   onRef,
   multiline,
-  secureTextEntry,
   suggestion,
   autoCapitalize,
   propsOther,
@@ -39,33 +46,35 @@ function BaseInput({
   styleOptionsSuggestion,
   styleTextSuggestion,
   styleViewInput,
-  offsetMarginSuggestion = 0,
   backgroundColor = '#f0f0f0',
+  levelPasswords = 0,
+  comparePasswords,
 }: PropsBaseInput) {
   //const
   const keyboardType: KeyboardType = getKeyboardType(option);
   // state
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
-  const [heightSuggestion, setHeightSuggestion] = useState<number>(30);
+  const [isPassword, setIsPassword] = useState<LevelPassword>({
+    length: false,
+    textAndNumber: false,
+    textUpper: false,
+    specialCharacters: false,
+  });
   const [dataText, setDataText] = useState<SuggestionProps>({
     first: '',
     second: '',
     third: '',
   });
 
-  //handle
-  useEffect(() => {
-    if (styleOptionsSuggestion) {
-      const {height} = styleOptionsSuggestion;
-      if (height) {
-        setHeightSuggestion(height);
-      }
-    }
-  }, [styleOptionsSuggestion]);
-
   function handleEndEdit(text: string): boolean {
-    const isErrorInput = isErrorFormatType(text, option);
+    const isErrorInput = isErrorFormatType(
+      text,
+      option,
+      levelPasswords,
+      comparePasswords,
+    );
     if (option === 'price') {
       setIsShow(false);
     }
@@ -89,9 +98,18 @@ function BaseInput({
   }
 
   function handleChangeText(text: string) {
-    let data: string = '';
-    data = getFormatPrice(text, option);
-    handleTextPriceSuggestion(data);
+    let data = text;
+    if (option === 'price') {
+      data = getFormatPrice(text, option);
+      handleTextPriceSuggestion(data);
+    } else if (option === 'password') {
+      let password = getFormatPassword(text);
+      setIsPassword(password);
+    } else if (option === 'confirm') {
+      let isConfirm = getFormatConfirm(text, comparePasswords);
+      setIsError(!isConfirm);
+      setIsShow(true);
+    }
     if (onChangeText !== undefined) {
       onChangeText(data);
     }
@@ -107,10 +125,12 @@ function BaseInput({
 
   function handleFocus(_e: any) {
     if (option === 'price' && value !== undefined && value !== '') {
-      // setIsShow(true);
       handleTextPriceSuggestion(value);
     } else if (option === 'email' || option === 'phone') {
       setIsError(false);
+    } else if (option === 'password') {
+      setIsError(false);
+      setIsShow(true);
     }
   }
   function handlePressSuggestion(index: OPTION) {
@@ -128,69 +148,74 @@ function BaseInput({
     Keyboard.dismiss();
   }
 
+  function handlePressPassword() {
+    setHidePassword(!hidePassword);
+  }
+  function handleDelete() {
+    if (handleChangeText !== undefined) {
+      handleChangeText('');
+    }
+  }
+
   return (
-    <View style={[{backgroundColor: backgroundColor}, styleViewInput]}>
-      <TextInput
-        onChangeText={handleChangeText}
-        value={value}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
+    <View
+      style={[{backgroundColor: backgroundColor}, styles.view, styleViewInput]}>
+      <View
         style={[
-          styles.textInput,
-          style,
+          styles.inputContainer,
           {
-            borderColor: isError ? 'red' : '#000',
+            borderColor: isError ? '#b00020' : '#000',
           },
-          {
-            backgroundColor: backgroundColor,
-          },
-        ]}
-        ref={onRef}
-        multiline={multiline}
-        autoCapitalize={autoCapitalize}
-        keyboardType={keyboardType}
-        secureTextEntry={secureTextEntry}
-        defaultValue={defaultValue}
-        onEndEditing={handleOnEndEditing}
-        onFocus={handleFocus}
-        {...propsOther}
-      />
-      {isShow && option === 'price' ? (
-        <ScrollView
-          contentContainerStyle={[
-            styles.suggestionView,
-            {height: suggestion ? heightSuggestion : 0},
+        ]}>
+        <TextInput
+          onChangeText={handleChangeText}
+          value={value}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          style={[
+            styles.textInput,
+            style,
+            {
+              backgroundColor: backgroundColor,
+            },
           ]}
-          style={[{width: '100%'}, styleViewSuggestion]}
-          horizontal={true}
-          keyboardShouldPersistTaps="always">
-          <TouchableOpacity
-            style={styleOptionsSuggestion}
-            onPress={() => handlePressSuggestion(OPTION.FIRST)}>
-            <Text style={styleTextSuggestion}>{dataText.first}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styleOptionsSuggestion}
-            onPress={() => handlePressSuggestion(OPTION.SECOND)}>
-            <Text style={styleTextSuggestion}>{dataText.second}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styleOptionsSuggestion}
-            onPress={() => handlePressSuggestion(OPTION.THIRD)}>
-            <Text style={styleTextSuggestion}>{dataText.third}</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      ) : (
-        <View
-          style={{
-            height: suggestion ? heightSuggestion + offsetMarginSuggestion : 0,
-          }}
+          ref={onRef}
+          multiline={multiline}
+          autoCapitalize={autoCapitalize}
+          keyboardType={keyboardType}
+          secureTextEntry={hidePassword}
+          defaultValue={defaultValue}
+          onEndEditing={handleOnEndEditing}
+          onFocus={handleFocus}
+          {...propsOther}
+        />
+        <View style={styles.icon}>
+          {(option === 'password' || option === 'confirm') && (
+            <ItemPassword onPress={handlePressPassword} />
+          )}
+          <ItemDelete onPress={handleDelete} />
+        </View>
+      </View>
+      {isShow && option === 'price' && (
+        <ItemPrice
+          styleViewSuggestion={styleViewSuggestion}
+          styleOptionsSuggestion={styleOptionsSuggestion}
+          styleTextSuggestion={styleTextSuggestion}
+          onPressSuggestion={handlePressSuggestion}
+          dataText={dataText}
         />
       )}
+      <ItemWarning
+        error={isError}
+        option={option}
+        password={isPassword}
+        isShow={isShow}
+        level={levelPasswords}
+      />
       <Text
         style={[
           {backgroundColor: backgroundColor},
-          {color: isError ? 'red' : '#000'},
+          {color: isError ? '#b00020' : '#000'},
           styles.textTitle,
           styleTitle,
         ]}>
@@ -201,9 +226,11 @@ function BaseInput({
 }
 
 const styles = StyleSheet.create({
+  view: {},
   textInput: {
-    borderWidth: 1,
-    borderRadius: 5,
+    flexGrow: 1,
+    // backgroundColor: 'red',
+    marginLeft: 5,
   },
   textTitle: {
     position: 'absolute',
@@ -213,6 +240,17 @@ const styles = StyleSheet.create({
   suggestionView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 5,
+    flexGrow: 1,
+  },
+  icon: {
+    flexDirection: 'row',
   },
 });
 export default BaseInput;

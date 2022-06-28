@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 import {KeyboardType} from 'react-native';
+import {LevelPassword} from '../model/base-input-model';
 
 function getKeyboardType(option: string | undefined): KeyboardType {
   if (option === 'number') {
@@ -65,15 +66,87 @@ function getFormatPrice(price: string, option: string | undefined): string {
   return result;
 }
 
-function isErrorFormatType(text: string, option: string | undefined): boolean {
+function isNotLengthPassword(password: string): boolean {
+  return password.length < 6;
+}
+
+function isNotTextAndNumPass(password: string): boolean {
+  if (password.replace(/[^0-9]/g, '')) {
+    return false;
+  }
+  return true;
+}
+
+function isNotTextUpper(password: string): boolean {
+  if (password.replace(/[^A-Z]/g, '')) {
+    return false;
+  }
+  return true;
+}
+
+function isNotSpecialCharacters(password: string): boolean {
+  if (password.replace(/[\w\s]/gi, '')) {
+    return false;
+  }
+  return true;
+}
+
+function isErrorFormatType(
+  text: string,
+  option: string | undefined,
+  level: number,
+  comparePasswords: string | undefined,
+): boolean {
   let isError: boolean = false;
   if (option === 'phone') {
     isError = isErrorVietnamesePhoneNumber(text);
-  }
-  if (option === 'email') {
+  } else if (option === 'email') {
     isError = isErrorValidateEmail(text);
+  } else if (option === 'password') {
+    const level1 = isNotLengthPassword(text);
+    const level2 = isNotTextAndNumPass(text);
+    const level3 = isNotTextUpper(text);
+    const level4 = isNotSpecialCharacters(text);
+    if (level === 0) {
+      isError = level1;
+    } else if (level === 1) {
+      isError = level1 || level2;
+    } else if (level === 2) {
+      isError = level1 || level2 || level3;
+    } else if (level === 3) {
+      isError = level1 || level2 || level3 || level4;
+    }
+  } else if (option === 'confirm') {
+    isError = !getFormatConfirm(text, comparePasswords);
   }
   return isError;
+}
+
+function getFormatPassword(data: string): LevelPassword {
+  let password: LevelPassword = {
+    length: false,
+    textAndNumber: false,
+    textUpper: false,
+    specialCharacters: false,
+  };
+  if (!isNotLengthPassword(data)) {
+    password.length = true;
+  }
+  if (!isNotTextAndNumPass(data)) {
+    password.textAndNumber = true;
+  }
+  if (!isNotTextUpper(data)) {
+    password.textUpper = true;
+  }
+  if (!isNotSpecialCharacters(data)) {
+    password.specialCharacters = true;
+  }
+  console.log('format-password: ', password);
+  return password;
+}
+
+function getFormatConfirm(data: string, root: string | undefined): boolean {
+  return data === root;
 }
 
 export {
@@ -83,4 +156,6 @@ export {
   getFormatPrice,
   isErrorFormatType,
   getNumberOtherZero,
+  getFormatPassword,
+  getFormatConfirm,
 };

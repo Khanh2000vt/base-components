@@ -5,9 +5,18 @@ import {
   TextStyle,
   ViewStyle,
 } from 'react-native';
+import {OPTION} from '../utils';
 
 interface PropsBaseInput {
-  option?: 'text' | 'number' | 'phone' | 'email' | 'price' | undefined;
+  option?:
+    | 'text'
+    | 'number'
+    | 'phone'
+    | 'email'
+    | 'price'
+    | 'password'
+    | 'confirm'
+    | undefined;
   title?: string;
   placeholder?: string | undefined;
   value: string | undefined;
@@ -17,8 +26,9 @@ interface PropsBaseInput {
   onEndEditing?: (nativeEvent: any, isErrorInput: boolean) => void | undefined;
   onRef?: any;
   multiline?: boolean | undefined;
-  secureTextEntry?: boolean | undefined;
   suggestion?: boolean | undefined;
+  levelPasswords?: 0 | 1 | 2 | 3;
+  comparePasswords?: string | undefined;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters' | undefined;
   propsOther?: React.Component<TextInputProps>;
   styleViewInput?: StyleProp<ViewStyle> | undefined;
@@ -27,7 +37,6 @@ interface PropsBaseInput {
   styleViewSuggestion?: StyleProp<ViewStyle> | undefined;
   styleOptionsSuggestion?: StyleProp<ViewStyle> | undefined;
   styleTextSuggestion?: StyleProp<TextStyle> | undefined;
-  offsetMarginSuggestion?: number;
   backgroundColor?: ColorValue | undefined;
 }
 
@@ -36,4 +45,45 @@ interface SuggestionProps {
   second: string;
   third: string;
 }
-export type {PropsBaseInput, SuggestionProps};
+
+interface PropsPress {
+  onPress: () => void;
+}
+
+interface PropsPrice {
+  styleViewSuggestion?: StyleProp<ViewStyle> | undefined;
+  styleOptionsSuggestion?: StyleProp<ViewStyle> | undefined;
+  styleTextSuggestion?: StyleProp<TextStyle> | undefined;
+  onPressSuggestion: (option: OPTION) => void;
+  dataText: SuggestionProps;
+}
+interface LevelPassword {
+  length: boolean;
+  textAndNumber: boolean;
+  textUpper: boolean;
+  specialCharacters: boolean;
+}
+
+interface PropsWarning {
+  error: boolean;
+  option?:
+    | 'text'
+    | 'number'
+    | 'phone'
+    | 'email'
+    | 'price'
+    | 'password'
+    | 'confirm'
+    | undefined;
+  password: LevelPassword;
+  isShow: boolean;
+  level: 0 | 1 | 2 | 3;
+}
+export type {
+  PropsBaseInput,
+  SuggestionProps,
+  PropsPress,
+  PropsPrice,
+  PropsWarning,
+  LevelPassword,
+};
