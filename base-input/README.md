@@ -19,13 +19,14 @@
 | 16 | styleTextSuggestion | StyleProp<TextStyle>, undefined | false | style text suggestion | undefined |
 | 17 | styleViewInput | StyleProp<ViewStyle>, undefined | false | style view cover TextInput | undefined |
 | 18 | levelPasswords | 0,1,2,3 | false | The level security of password. Only use when `option = 'password'` | 0 |
-| 18 | suggestion | boolean | undefined | false | show options suggestion if true. Only used when `option = price` | false |
+| 18 | suggestion | boolean | undefined | false | show options suggestion if true. Only used when `option = price'` | false |
 | 19 | backgroundColor | ColorValue, undefined | false | background color of screen | #f0f0f0 |
 | 20 | value | string, undefined | true | value TextInput | undefined |
-| 21 | comparePasswords | string, undefined | false | value comparePasswords will compare with value input. Only use when `option = 'confirm`. | undefined
+| 21 | comparePasswords | string, undefined | false | value comparePasswords will compare with value input. Only use when `option = 'confirm'`. | undefined |
+| 22 | autoFocus | boolean, undefined | false | autoFocus TextInput | undefined |
 # Note
 ## option
-> Options: 'text' | 'number' | 'phone' | 'email' | 'price' | undefined;
+> Options: 'text' | 'number' | 'phone' | 'email' | 'price' | 'password'| 'confirm' | undefined;
 ## onEndEditing
 ### isErrorInput
 - Dùng để kiểm tra xem giá trị nhập vào có đúng định dạng không mỗi khi onEndEditing hay không.
@@ -43,6 +44,6 @@
 - `2`: Và mật khẩu gồm thêm chữ cái chữ hoa.
 - `3`: Và mật khẩu gồm thêm ký tự đặc biệt.
 ## backgroundColor
-- Nên chuyển props này để không bị lỗi view
+- Nên truyền props này để không bị lỗi view
 
 
