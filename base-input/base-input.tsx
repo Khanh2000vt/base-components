@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardType,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
+import AnimatedTitle from './components/animated-title';
 import ItemDelete from './components/item-delete';
 import ItemPassword from './components/item-password';
 import ItemPrice from './components/item-price';
@@ -52,8 +52,12 @@ function BaseInput({
 }: PropsBaseInput) {
   //const
   const keyboardType: KeyboardType = getKeyboardType(option);
+  //ref
+  const ref = useRef<TextInput>(null);
+  const ref_input = onRef ? onRef : ref;
   // state
   const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isPassword, setIsPassword] = useState<LevelPassword>({
@@ -78,6 +82,11 @@ function BaseInput({
     if (option === 'price') {
       setIsShow(false);
     }
+    if (option === 'password' || option === 'confirm') {
+      if (isErrorInput === false) {
+        setIsShow(false);
+      }
+    }
     setIsError(isErrorInput);
     return isErrorInput;
   }
@@ -97,6 +106,14 @@ function BaseInput({
     }
   }
 
+  function getIsShow(data: string) {
+    if (data === '') {
+      setIsShow(false);
+    } else {
+      setIsShow(true);
+    }
+  }
+
   function handleChangeText(text: string) {
     let data = text;
     if (option === 'price') {
@@ -105,10 +122,13 @@ function BaseInput({
     } else if (option === 'password') {
       let password = getFormatPassword(text);
       setIsPassword(password);
+      getIsShow(data);
     } else if (option === 'confirm') {
       let isConfirm = getFormatConfirm(text, comparePasswords);
       setIsError(!isConfirm);
-      setIsShow(true);
+      getIsShow(data);
+    } else {
+      getIsShow(data);
     }
     if (onChangeText !== undefined) {
       onChangeText(data);
@@ -118,18 +138,24 @@ function BaseInput({
   function handleOnEndEditing({nativeEvent}: any) {
     const {text} = nativeEvent;
     const isErrorInput = handleEndEdit(text);
+    if (text === '') {
+      setIsFocus(false);
+    }
     if (onEndEditing !== undefined) {
       onEndEditing(nativeEvent, isErrorInput);
     }
   }
 
   function handleFocus(_e: any) {
+    setIsFocus(true);
     if (option === 'price' && value !== undefined && value !== '') {
       handleTextPriceSuggestion(value);
     } else if (option === 'email' || option === 'phone') {
       setIsError(false);
     } else if (option === 'password') {
       setIsError(false);
+      setIsShow(true);
+    } else if (option === 'confirm') {
       setIsShow(true);
     }
   }
@@ -144,7 +170,6 @@ function BaseInput({
         onChangeText(dataText.third);
       }
     }
-    // dismissKeyboard();
     Keyboard.dismiss();
   }
 
@@ -154,9 +179,13 @@ function BaseInput({
   function handleDelete() {
     if (handleChangeText !== undefined) {
       handleChangeText('');
+      setIsShow(false);
     }
   }
 
+  function handlePressToFocus() {
+    ref_input?.current.focus();
+  }
   return (
     <View
       style={[{backgroundColor: backgroundColor}, styles.view, styleViewInput]}>
@@ -179,7 +208,7 @@ function BaseInput({
               backgroundColor: backgroundColor,
             },
           ]}
-          ref={onRef}
+          ref={ref_input}
           multiline={multiline}
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
@@ -187,14 +216,17 @@ function BaseInput({
           defaultValue={defaultValue}
           onEndEditing={handleOnEndEditing}
           onFocus={handleFocus}
+          maxLength={option === 'phone' ? 12 : undefined}
           {...propsOther}
         />
-        <View style={styles.icon}>
-          {(option === 'password' || option === 'confirm') && (
-            <ItemPassword onPress={handlePressPassword} />
-          )}
-          <ItemDelete onPress={handleDelete} />
-        </View>
+        {isFocus && (
+          <View style={styles.icon}>
+            {isShow && <ItemDelete onPress={handleDelete} />}
+            {(option === 'password' || option === 'confirm') && (
+              <ItemPassword onPress={handlePressPassword} />
+            )}
+          </View>
+        )}
       </View>
       {isShow && option === 'price' && (
         <ItemPrice
@@ -212,25 +244,27 @@ function BaseInput({
         isShow={isShow}
         level={levelPasswords}
       />
-      <Text
-        style={[
-          {backgroundColor: backgroundColor},
-          {color: isError ? '#b00020' : '#000'},
-          styles.textTitle,
-          styleTitle,
-        ]}>
-        {title}
-      </Text>
+      {title && (
+        <AnimatedTitle
+          isFocus={isFocus}
+          title={title}
+          styleTitle={styleTitle}
+          isError={isError}
+          backgroundColor={backgroundColor}
+          onPress={handlePressToFocus}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  view: {},
+  view: {
+    width: '100%',
+  },
   textInput: {
-    flexGrow: 1,
-    // backgroundColor: 'red',
-    marginLeft: 5,
+    flex: 1,
+    marginHorizontal: 5,
   },
   textTitle: {
     position: 'absolute',
@@ -243,11 +277,11 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
     borderWidth: 1,
     borderRadius: 5,
-    flexGrow: 1,
   },
   icon: {
     flexDirection: 'row',

@@ -141,7 +141,6 @@ function getFormatPassword(data: string): LevelPassword {
   if (!isNotSpecialCharacters(data)) {
     password.specialCharacters = true;
   }
-  console.log('format-password: ', password);
   return password;
 }
 

@@ -79,6 +79,15 @@ interface PropsWarning {
   isShow: boolean;
   level: 0 | 1 | 2 | 3;
 }
+
+interface PropsAnimatedTitle {
+  isFocus: boolean;
+  title: string | undefined;
+  isError: boolean;
+  styleTitle?: StyleProp<TextStyle> | undefined;
+  backgroundColor?: ColorValue | undefined;
+  onPress: () => void;
+}
 export type {
   PropsBaseInput,
   SuggestionProps,
@@ -86,4 +95,5 @@ export type {
   PropsPrice,
   PropsWarning,
   LevelPassword,
+  PropsAnimatedTitle,
 };
