@@ -10,9 +10,9 @@ interface PropsStepOrder {
 }
 
 interface PropsPage {
-  position?: number;
+  index: number;
   navigation?: any;
-  onPressNextPage?: () => void;
+  onPressNextPage?: (index: number, item?: any) => void;
 }
 
 interface PropsStepItem {

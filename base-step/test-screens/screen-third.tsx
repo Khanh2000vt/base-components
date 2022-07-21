@@ -2,11 +2,16 @@ import React from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import {PropsPage} from '../model/step-model';
 
-function ScreenThird({onPressNextPage}: PropsPage) {
+function ScreenThird({onPressNextPage, index}: PropsPage) {
+  function handlePress() {
+    if (onPressNextPage) {
+      onPressNextPage(index);
+    }
+  }
   return (
     <View style={styles.view}>
       <Text>Screen 3</Text>
-      <Button title="Next" onPress={onPressNextPage} />
+      <Button title="Next" onPress={handlePress} />
     </View>
   );
 }

@@ -3,7 +3,6 @@ import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {getDisabled} from '../controller/step-handle';
 import {PropsStepItem} from '../model/step-model';
 import {WIDTH_STEP} from '../utils';
-// const windowWidth = Dimensions.get('window').width;
 function StepItem({
   pageCurrent,
   onPress,
