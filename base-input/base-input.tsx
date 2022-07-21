@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardType,
@@ -14,18 +14,16 @@ import ItemPrice from './components/item-price';
 import ItemWarning from './components/item-warning';
 import {
   getFormatConfirm,
-  getFormatPassword,
   getFormatPrice,
   getKeyboardType,
   getNumberOtherZero,
-  isErrorFormatType,
+  getArrayKeyError,
+  getIsErrorInput,
+  getPriceSuggest,
+  getDecimalValue,
 } from './controller/base-input-handle';
-import {
-  LevelPassword,
-  PropsBaseInput,
-  SuggestionProps,
-} from './model/base-input-model';
-import {OPTION} from './utils';
+import {PropsBaseInput, SuggestionProps} from './model/base-input-model';
+import {ERROR, OPTION} from './utils';
 function BaseInput({
   option,
   title,
@@ -39,7 +37,6 @@ function BaseInput({
   multiline,
   suggestion,
   autoCapitalize,
-  propsOther,
   style,
   styleTitle,
   styleViewSuggestion,
@@ -49,55 +46,42 @@ function BaseInput({
   backgroundColor = '#f0f0f0',
   levelPasswords = 0,
   comparePasswords,
+  maxLength,
+  minLength,
+  maxValue,
+  minValue,
+  messageError,
 }: PropsBaseInput) {
   //const
-  const keyboardType: KeyboardType = getKeyboardType(option);
+  const keyboardType: KeyboardType = useMemo(
+    () => getKeyboardType(option),
+    [option],
+  );
   //ref
   const ref = useRef<TextInput>(null);
   const ref_input = onRef ? onRef : ref;
+  //array error
+  const [arrayError, setArrayError] = useState<ERROR[]>([ERROR.NOT_ERROR]);
   // state
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
-  const [isPassword, setIsPassword] = useState<LevelPassword>({
-    length: false,
-    textAndNumber: false,
-    textUpper: false,
-    specialCharacters: false,
-  });
   const [dataText, setDataText] = useState<SuggestionProps>({
     first: '',
     second: '',
     third: '',
   });
 
-  function handleEndEdit(text: string): boolean {
-    const isErrorInput = isErrorFormatType(
-      text,
-      option,
-      levelPasswords,
-      comparePasswords,
-    );
-    if (option === 'price') {
-      setIsShow(false);
-    }
-    if (option === 'password' || option === 'confirm') {
-      if (isErrorInput === false) {
-        setIsShow(false);
-      }
-    }
-    setIsError(isErrorInput);
-    return isErrorInput;
-  }
-
   function handleTextPriceSuggestion(data: string) {
     if (option === 'price' && suggestion) {
+      setIsError(false);
       if (getNumberOtherZero(data)) {
+        let priceSuggest = getPriceSuggest(data, minValue, maxValue, option);
         setDataText({
-          first: getFormatPrice(`${data}000`, option),
-          second: getFormatPrice(`${data}0000`, option),
-          third: getFormatPrice(`${data}00000`, option),
+          first: priceSuggest[0],
+          second: priceSuggest[1],
+          third: priceSuggest[2],
         });
         setIsShow(true);
       } else {
@@ -120,19 +104,48 @@ function BaseInput({
       data = getFormatPrice(text, option);
       handleTextPriceSuggestion(data);
     } else if (option === 'password') {
-      let password = getFormatPassword(text);
-      setIsPassword(password);
       getIsShow(data);
     } else if (option === 'confirm') {
       let isConfirm = getFormatConfirm(text, comparePasswords);
-      setIsError(!isConfirm);
+      if (isConfirm === ERROR.NOT_ERROR) {
+        setIsError(true);
+      } else {
+        setIsError(false);
+      }
       getIsShow(data);
+    } else if (option === 'decimal') {
+      data = getDecimalValue(text, value);
     } else {
       getIsShow(data);
     }
     if (onChangeText !== undefined) {
       onChangeText(data);
     }
+  }
+
+  function handleEndEdit(_text: string): boolean {
+    const listError: ERROR[] = getArrayKeyError(
+      value,
+      option,
+      levelPasswords,
+      comparePasswords,
+      minLength,
+      minValue,
+      maxValue,
+    );
+    console.log('error: ', listError);
+    setArrayError([...listError]);
+    const isErrorInput = getIsErrorInput(listError);
+    if (option === 'price') {
+      setIsShow(false);
+    }
+    if (option === 'password' || option === 'confirm') {
+      if (isErrorInput === false) {
+        setIsShow(false);
+      }
+    }
+    setIsError(isErrorInput);
+    return isErrorInput;
   }
 
   function handleOnEndEditing({nativeEvent}: any) {
@@ -212,12 +225,14 @@ function BaseInput({
           multiline={multiline}
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
-          secureTextEntry={hidePassword}
+          // keyboardType="decimal-pad"
+          secureTextEntry={
+            option === 'password' || option === 'confirm' ? hidePassword : false
+          }
           defaultValue={defaultValue}
           onEndEditing={handleOnEndEditing}
           onFocus={handleFocus}
-          maxLength={option === 'phone' ? 12 : undefined}
-          {...propsOther}
+          maxLength={option === 'phone' ? 12 : maxLength}
         />
         {isFocus && (
           <View style={styles.icon}>
@@ -239,10 +254,8 @@ function BaseInput({
       )}
       <ItemWarning
         error={isError}
-        option={option}
-        password={isPassword}
-        isShow={isShow}
-        level={levelPasswords}
+        messageError={messageError}
+        arrayError={arrayError}
       />
       {title && (
         <AnimatedTitle

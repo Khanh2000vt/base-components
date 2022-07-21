@@ -30,7 +30,8 @@ function ItemPrice({
       ]}
       style={[{width: '100%'}, styleViewSuggestion]}
       horizontal={true}
-      keyboardShouldPersistTaps="always">
+      keyboardShouldPersistTaps="always"
+      nestedScrollEnabled={true}>
       <TouchableOpacity
         style={styleOptionsSuggestion}
         onPress={() => onPressSuggestion(OPTION.FIRST)}>
@@ -54,6 +55,13 @@ const styles = StyleSheet.create({
   suggestionView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    elevation: 1,
+    zIndex: 1,
+    // flex: 1,
+  },
+  text: {
+    fontSize: 10,
+    marginLeft: 10,
   },
 });
 
